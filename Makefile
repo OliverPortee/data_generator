@@ -1,11 +1,15 @@
 
+# https://stackoverflow.com/a/1951111
+
+.PHONY: run clean all
+
 all: build build/aqp
 
 build/aqp: main.cpp
 	c++ -o build/aqp main.cpp
 
 build:
-	mkdir -p build
+	@mkdir -p build
 
 run: all
 	./build/aqp
