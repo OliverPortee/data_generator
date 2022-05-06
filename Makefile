@@ -6,7 +6,7 @@
 all: build build/aqp
 
 build/aqp: main.cpp
-	c++ -o build/aqp main.cpp
+	c++ -std=c++20 -o build/aqp main.cpp
 
 build:
 	@mkdir -p build
