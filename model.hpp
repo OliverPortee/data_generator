@@ -4,15 +4,19 @@
 #include <string_view>
 #include <memory>
 #include <functional>
+#include <ostream>
+
+struct Data;
+struct Settings;
 
 struct OutputMethod {
-    virtual std::string_view name() = 0;
-    virtual void operator()();
+    virtual std::string_view name() const = 0;
+    virtual void operator()(const Data& data, const Settings& settings, std::ostream& ostream) const = 0;
 };
 
 struct RandomDistribution {
-    std::function<int()> nextInt;
-    std::string name;
+    virtual std::string_view name() const = 0;
+    virtual int nextInt() = 0;
 };
 
 struct Settings {
@@ -21,7 +25,7 @@ struct Settings {
     unsigned int row_count = 5;
     unsigned int sample_count = 1000;
     std::unique_ptr<OutputMethod> output;
-    RandomDistribution random;
+    std::unique_ptr<RandomDistribution> random;
 };
 
 struct Data {
