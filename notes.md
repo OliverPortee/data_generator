@@ -23,11 +23,3 @@ The advice for this week is to create an initial class structure for the generat
 
 * Output format? As SQL? csv
 * ober- und untergrenze, anzahl columns, rows, deterministic by seed or random
-
-* vortrag über c++ oder inhalte
-
-
-# Meckern
-
-* ref-to-ref existiert nicht
-* const function can change value that is pointed to by pointer
