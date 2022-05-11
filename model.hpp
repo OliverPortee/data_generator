@@ -32,10 +32,14 @@ struct Settings {
     std::unique_ptr<OutputMethod> output;
     std::unique_ptr<RandomDistribution> random;
 
-    Settings(std::optional<int> min, std::optional<int> max,
-             unsigned int row_count, unsigned int sample_count,
-             std::unique_ptr<OutputMethod> output,
-             std::unique_ptr<RandomDistribution> random);
+    Settings(
+        std::optional<int> min = {}, std::optional<int> max = {},
+        unsigned int row_count = 5, unsigned int sample_count = 1000,
+        std::unique_ptr<OutputMethod> output = std::make_unique<CsvOutput>(),
+        std::unique_ptr<RandomDistribution> random =
+            std::make_unique<UniformDistribution>());
+
+    Settings();
 };
 
 struct Data {
@@ -44,13 +48,19 @@ struct Data {
 };
 
 struct UniformDistribution : RandomDistribution {
-    UniformDistribution(int min, int max);
-    UniformDistribution(unsigned int seed, int min, int max);
+    UniformDistribution();
+    static UniformDistribution fromSeed(unsigned int seed);
+    static UniformDistribution fromMinMax(int min, int max);
+    static UniformDistribution fromSeedMinMax(unsigned int seed, int min,
+                                              int max);
 
     std::string_view name() const;
     int nextInt();
 
    private:
+    UniformDistribution(std::uniform_int_distribution<int> dist,
+                        std::mt19937 gen);
+
     std::uniform_int_distribution<int> dist;
     std::mt19937 gen;
 };

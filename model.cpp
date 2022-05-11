@@ -14,15 +14,32 @@ Settings::Settings(std::optional<int> min, std::optional<int> max,
       output{std::move(output)},
       random{std::move(random)} {}
 
-
 Data::Data(unsigned int row_count, unsigned int sample_count)
-: data(sample_count, std::vector<int>(row_count, 0)) {}
+    : data(sample_count, std::vector<int>(row_count, 0)) {}
 
-UniformDistribution::UniformDistribution(unsigned int seed, int min, int max)
-    : gen{seed}, dist{min, max} {}
+UniformDistribution::UniformDistribution(
+    std::uniform_int_distribution<int> dist,
+    std::mt19937 gen = std::mt19937{std::random_device{}()})
+    : dist{dist}, gen{gen} {}
 
-UniformDistribution::UniformDistribution(int min, int max)
-    : UniformDistribution{std::random_device{}(), min, max} {}
+UniformDistribution::UniformDistribution()
+    : UniformDistribution{std::uniform_int_distribution<int>{}} {}
+
+UniformDistribution UniformDistribution::fromSeed(unsigned int seed) {
+    return UniformDistribution{std::uniform_int_distribution<int>{},
+                               std::mt19937{seed}};
+}
+
+UniformDistribution UniformDistribution::fromMinMax(int min, int max) {
+    return UniformDistribution{std::uniform_int_distribution<int>{min, max}};
+}
+
+UniformDistribution UniformDistribution::fromSeedMinMax(unsigned int seed,
+                                                        int min, int max) {
+    return UniformDistribution {
+        std::uniform_int_distribution<int>{min, max}, std::mt19937 { seed }
+    };
+}
 
 std::string_view UniformDistribution::name() const {
     return "UniformDistribution";

@@ -23,3 +23,12 @@ The advice for this week is to create an initial class structure for the generat
 
 * Output format? As SQL? csv
 * ober- und untergrenze, anzahl columns, rows, deterministic by seed or random
+
+# TODOs
+
+* parameter parser
+* measure difference between shell pipe and direct file writing ---> performance difference of 2-4%
+* normal distribution
+* sql output
+* comments
+* reproducible output (seed) + comment with used command line parameters
