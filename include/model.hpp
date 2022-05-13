@@ -41,22 +41,20 @@ struct UniformDistribution : RandomDistribution {
 
    private:
     UniformDistribution(std::uniform_int_distribution<int> dist,
-                        std::mt19937 gen = std::mt19937{std::random_device{}()});
+                        std::mt19937 gen = std::mt19937{
+                            std::random_device{}()});
 
     std::uniform_int_distribution<int> dist;
     std::mt19937 gen;
 };
 
 struct Settings {
-    std::optional<int> min;
-    std::optional<int> max;
     unsigned int col_count;
     unsigned int sample_count;
     std::unique_ptr<OutputMethod> output;
     std::unique_ptr<RandomDistribution> random;
 
     Settings(
-        std::optional<int> min = {}, std::optional<int> max = {},
         unsigned int col_count = 5, unsigned int sample_count = 1000,
         std::unique_ptr<OutputMethod> output = std::make_unique<CsvOutput>(),
         std::unique_ptr<RandomDistribution> random =

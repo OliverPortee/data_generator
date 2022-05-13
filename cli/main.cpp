@@ -13,8 +13,6 @@
 
 
 struct CliOptions {
-    int min = std::numeric_limits<int>::min();   // --min
-    int max = std::numeric_limits<int>::max();   // --max
     unsigned int sample_count = 1000;            // -n
     unsigned int col_count = 5;                  // -c
     unsigned int seed = std::random_device{}();  // --seed
@@ -24,24 +22,28 @@ struct CliOptions {
 
 CliOptions parse_cli_options(int argc, char* argv[]) {
     CliOptions options{};
-    CLI::App app{"random int generator"};
-    auto min_option = app.add_option("--min", options.min, "minimum value of random ints");
-    auto max_option = app.add_option("--max", options.max, "maximum value of random ints");
+    CLI::App app{"random number generator"};
     app.add_option("-n", options.sample_count, "number of rows to be generated");
     app.add_option("-c", options.col_count, "number of cols to be generated");
     app.add_option("--seed", options.seed, "use seed for deterministic pseudo-random data");
     app.add_option("-o,--ouput", options.output, "output format")->check(CLI::IsMember{{"csv", "sql", "json"}});
-    app.add_option("--distribution", options.distribution, "random number distribution")->check(CLI::IsMember{{"uniform", "normal"}});
 
-    min_option->needs(max_option);
-    max_option->needs(min_option);
-    app.set_help_flag("-h,--help", "print this help");
+    auto uniform_command = app.add_subcommand("uniform", "generates random integers from a uniform distribution");
+    auto min_option = uniform_command->add_option("--min", "minimum value of random ints");
+    auto max_option = uniform_command->add_option("--max", "maximum value of random ints");
+    min_option->needs(max_option)->default_val<int>(std::numeric_limits<int>::min());
+    max_option->needs(min_option)->default_val<int>(std::numeric_limits<int>::max());
+
+    auto normal_command = app.add_subcommand("normal", "generates random doubles from a normal distribution");
+    normal_command->add_option("--mean", "the mean of the normal distribution")->default_val<double>(0.0);
+    normal_command->add_option("--stddev", "the standard deviation of the normal distribution")->default_val<double>(1.0);
+
+    auto bernoulli_command = app.add_subcommand("bernoulli", "generates random booleans from a bernoulli distribution");
+    bernoulli_command->add_option("-p", "the probability p of the bernoulli distribution")->default_val<double>(0.5);
 
     try {
         app.parse(argc, argv);
-        if (options.min >= options.max) {
-            throw CLI::ValidationError{"min must be smaller than max"};
-        }
+        // TODO: check that min is smaller than max
     } catch(const CLI::ParseError &e) {
         std::exit(app.exit(e));
     }
@@ -53,6 +55,8 @@ CliOptions parse_cli_options(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 
     parse_cli_options(argc, argv);
+
+    std::bernoulli_distribution n{};
 
     Settings settings{};
     

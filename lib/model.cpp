@@ -3,13 +3,10 @@
 
 #include <cassert>
 
-Settings::Settings(std::optional<int> min, std::optional<int> max,
-                   unsigned int col_count, unsigned int sample_count,
+Settings::Settings(unsigned int col_count, unsigned int sample_count,
                    std::unique_ptr<OutputMethod> output,
                    std::unique_ptr<RandomDistribution> random)
-    : min{min},
-      max{max},
-      col_count{col_count},
+    : col_count{col_count},
       sample_count{sample_count},
       output{std::move(output)},
       random{std::move(random)} {}
