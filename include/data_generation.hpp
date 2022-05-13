@@ -5,6 +5,6 @@
 
 #include "model.hpp"
 
-void generate_data(const Settings& settings);
+Data generate_data(const Settings& settings);
 
 #endif

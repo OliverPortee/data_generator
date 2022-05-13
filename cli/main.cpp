@@ -1,9 +1,10 @@
 
 #include <iostream>
 
-#include "do_it.hpp"
+#include "data_generation.hpp"
 #include "model.hpp"
 
+#if 0
 Settings parse_cli_parameters(int argc, char* argv[]) {
     // --min NUMBER
     // --max NUMBER
@@ -14,10 +15,8 @@ Settings parse_cli_parameters(int argc, char* argv[]) {
     // --distribution uniform|normal # default uniform
 
     unsigned int pos = 1;
-    while (pos < argc) {
-        if (argv[pos])
-    }
 }
+#endif
 
 int main(int argc, char* argv[]) {
     Settings s{0,
@@ -26,6 +25,7 @@ int main(int argc, char* argv[]) {
                10,
                std::make_unique<CsvOutput>(),
                std::make_unique<UniformDistribution>(0, 1000000)};
-    generate_data(s);
+    auto data = generate_data(s);
+    s.output->operator()(data, s, std::cout);
     return 0;
 }
