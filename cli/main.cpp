@@ -26,6 +26,6 @@ int main(int argc, char* argv[]) {
                10,
                std::make_unique<CsvOutput>(),
                std::make_unique<UniformDistribution>(0, 1000000)};
-    do_it(s);
+    generate_data(s);
     return 0;
 }

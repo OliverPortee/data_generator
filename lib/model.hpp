@@ -19,6 +19,10 @@ struct OutputMethod {
                             std::ostream& ostream) const = 0;
 };
 
+struct XMLOutput : public OutputMethod {
+    
+};
+
 struct RandomDistribution {
     virtual std::string_view name() const = 0;
     virtual int nextInt() = 0;
@@ -27,14 +31,14 @@ struct RandomDistribution {
 struct Settings {
     std::optional<int> min;
     std::optional<int> max;
-    unsigned int row_count;
+    unsigned int col_count;
     unsigned int sample_count;
     std::unique_ptr<OutputMethod> output;
     std::unique_ptr<RandomDistribution> random;
 
     Settings(
         std::optional<int> min = {}, std::optional<int> max = {},
-        unsigned int row_count = 5, unsigned int sample_count = 1000,
+        unsigned int col_count = 5, unsigned int sample_count = 1000,
         std::unique_ptr<OutputMethod> output = std::make_unique<CsvOutput>(),
         std::unique_ptr<RandomDistribution> random =
             std::make_unique<UniformDistribution>());
@@ -44,7 +48,7 @@ struct Settings {
 
 struct Data {
     std::vector<std::vector<int>> data;
-    Data(unsigned int row_count, unsigned int sample_count);
+    Data(unsigned int col_count, unsigned int sample_count);
 };
 
 struct UniformDistribution : RandomDistribution {

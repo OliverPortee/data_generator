@@ -4,18 +4,18 @@
 #include <cassert>
 
 Settings::Settings(std::optional<int> min, std::optional<int> max,
-                   unsigned int row_count, unsigned int sample_count,
+                   unsigned int col_count, unsigned int sample_count,
                    std::unique_ptr<OutputMethod> output,
                    std::unique_ptr<RandomDistribution> random)
     : min{min},
       max{max},
-      row_count{row_count},
+      col_count{col_count},
       sample_count{sample_count},
       output{std::move(output)},
       random{std::move(random)} {}
 
-Data::Data(unsigned int row_count, unsigned int sample_count)
-    : data(sample_count, std::vector<int>(row_count, 0)) {}
+Data::Data(unsigned int col_count, unsigned int sample_count)
+    : data(sample_count, std::vector<int>(col_count, 0)) {}
 
 UniformDistribution::UniformDistribution(
     std::uniform_int_distribution<int> dist,
