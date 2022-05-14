@@ -26,22 +26,22 @@ The advice for this week is to create an initial class structure for the generat
 
 # TODOs
 
-[x] parameter parser
-[x] measure difference between shell pipe and direct file writing ---> performance difference of 2-4%
-[x] normal distribution
-[x] sql output
-[x] comments
-[x] reproducible output (seed)
-[x] comment with used command line parameters
-[x] namespace for lib
-[x] turn on compiler warnings/errors
-[x] data --> single dimensional vector
-[ ] ~~tests?~~
-[x] change executable name
-[x] rename model.hpp
-[x] shouldn't crash with n,c == 0,0 (both in lib and in cli)
-[ ] use iterators for output
-[ ] ~~output bool in the right way~~
-[x] tablename option
-[x] readme
-[ ] ~~use inheritance instead of switches in main.cpp?~~
+* [x] parameter parser
+* [x] measure difference between shell pipe and direct file writing ---> performance difference of 2-4%
+* [x] normal distribution
+* [x] sql output
+* [x] comments
+* [x] reproducible output (seed)
+* [x] comment with used command line parameters
+* [x] namespace for lib
+* [x] turn on compiler warnings/errors
+* [x] data --> single dimensional vector
+* [ ] ~~tests?~~
+* [x] change executable name
+* [x] rename model.hpp
+* [x] shouldn't crash with n,c == 0,0 (both in lib and in cli)
+* [ ] use iterators for output
+* [ ] ~~output bool in the right way~~
+* [x] tablename option
+* [x] readme
+* [ ] ~~use inheritance instead of switches in main.cpp?~~
