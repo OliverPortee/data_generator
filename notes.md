@@ -33,6 +33,6 @@ The advice for this week is to create an initial class structure for the generat
 [ ] comments
 [ ] reproducible output (seed) + comment with used command line parameters
 [ ] namespace for lib
-[ ] turn on compiler warnings/errors
+[x] turn on compiler warnings/errors
 [ ] data --> single dimensional vector
 [ ] tests?
