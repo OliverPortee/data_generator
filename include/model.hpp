@@ -17,21 +17,18 @@ using OutputMethod =
 // see https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
 template <class RandomNumberDistribution>
 struct Settings {
-    unsigned int col_count;
     unsigned int sample_count;
+    unsigned int col_count;
 
     using SeedType = std::random_device::result_type;
     SeedType seed;
-    OutputMethod<typename RandomNumberDistribution::result_type> output;
     RandomNumberDistribution random;
 
-    Settings(unsigned int col_count, unsigned int sample_count, SeedType seed,
-             OutputMethod<typename RandomNumberDistribution::result_type> output,
+    Settings(unsigned int sample_count, unsigned int col_count, SeedType seed,
              RandomNumberDistribution random)
-        : col_count{col_count},
-          sample_count{sample_count},
+        : sample_count{sample_count},
+          col_count{col_count},
           seed{seed},
-          output{output},
           random{random} {}
 };
 
@@ -46,7 +43,8 @@ template <class RandomNumberDistribution>
 Data<typename RandomNumberDistribution::result_type> generate_data(
     Settings<RandomNumberDistribution>& settings) {
     std::mt19937 random_algo{settings.seed};
-    Data<typename RandomNumberDistribution::result_type> data{settings.col_count, settings.sample_count};
+    Data<typename RandomNumberDistribution::result_type> data{
+        settings.col_count, settings.sample_count};
     for (unsigned int i = 0; i < settings.sample_count; ++i) {
         for (unsigned int j = 0; j < settings.col_count; ++j) {
             data.data[i][j] = settings.random(random_algo);
