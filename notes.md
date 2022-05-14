@@ -44,4 +44,4 @@ The advice for this week is to create an initial class structure for the generat
 [ ] ~~output bool in the right way~~
 [x] tablename option
 [x] readme
-[ ] use inheritance instead of switches in main.cpp?
+[ ] ~~use inheritance instead of switches in main.cpp?~~
