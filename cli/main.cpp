@@ -6,7 +6,7 @@
 #include <map>
 
 #include "CLI/CLI.hpp"
-#include "model.hpp"
+#include "data_generator/data_generator.hpp"
 
 struct CliOptions {
     enum class OutputType { csv, sql, json };
