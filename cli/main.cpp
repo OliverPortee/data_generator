@@ -200,21 +200,22 @@ int main(int argc, char* argv[]) {
     switch (options.distribution) {
         case CliOptions::RandomDistribution::uniform: {
             std::uniform_int_distribution random{options.min, options.max};
-            Settings settings{options.sample_count, options.col_count,
-                              options.seed, random};
-            output<int>(generate_data(settings), options);
+            output<int>(generate_data(options.sample_count, options.col_count,
+                                      options.seed, random),
+                        options);
         } break;
         case CliOptions::RandomDistribution::normal: {
             std::normal_distribution random{options.mean, options.stddev};
-            Settings settings{options.sample_count, options.col_count,
-                              options.seed, random};
-            output<double>(generate_data(settings), options);
+            output<double>(
+                generate_data(options.sample_count, options.col_count,
+                              options.seed, random),
+                options);
         } break;
         case CliOptions::RandomDistribution::bernoulli: {
             std::bernoulli_distribution random{options.p};
-            Settings settings{options.sample_count, options.col_count,
-                              options.seed, random};
-            output<bool>(generate_data(settings), options);
+            output<bool>(generate_data(options.sample_count, options.col_count,
+                                       options.seed, random),
+                         options);
         } break;
     }
 
