@@ -36,3 +36,4 @@ The advice for this week is to create an initial class structure for the generat
 [x] turn on compiler warnings/errors
 [ ] data --> single dimensional vector
 [ ] tests?
+[ ] change executable name
