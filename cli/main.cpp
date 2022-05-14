@@ -92,6 +92,54 @@ void output(CliOptions::OutputType o, Data<T>&& data) {
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const CliOptions& options) {
+    switch (options.output) {
+        case CliOptions::OutputType::json:
+            os << "// ";  // actually there are no comments in json, but anyways
+            break;
+        case CliOptions::OutputType::csv:
+            os << "# ";  // actually there are no comments in csv, but anyways
+            break;
+        case CliOptions::OutputType::sql:
+            os << "-- ";
+            break;
+    }
+    os << "gendata";
+    os << " -n " << options.sample_count;
+    os << " -c " << options.col_count;
+    os << " --seed " << options.seed;
+    os << " -o ";
+    switch (options.output) {
+        case CliOptions::OutputType::json:
+            os << "json";
+            break;
+        case CliOptions::OutputType::csv:
+            os << "csv";
+            break;
+        case CliOptions::OutputType::sql:
+            os << "sql";
+            break;
+    }
+
+    switch (options.distribution) {
+        case CliOptions::RandomDistribution::uniform:
+            os << " uniform";
+            os << " --min " << options.min;
+            os << " --max " << options.max;
+            break;
+        case CliOptions::RandomDistribution::normal:
+            os << " normal";
+            os << " --mean " << options.mean;
+            os << " --stddev " << options.stddev;
+            break;
+        case CliOptions::RandomDistribution::bernoulli:
+            os << " bernoulli";
+            os << " -p " << options.p;
+            break;
+    }
+    return os;
+}
+
 int main(int argc, char* argv[]) {
     CliOptions options = parse_cli_options(argc, argv);
 
@@ -115,4 +163,7 @@ int main(int argc, char* argv[]) {
             output<bool>(options.output, generate_data(settings));
         } break;
     }
+
+    // std::cerr so that we can use shell pipes without problems
+    std::cerr << options << std::endl;
 }

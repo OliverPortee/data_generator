@@ -32,7 +32,7 @@ The advice for this week is to create an initial class structure for the generat
 [x] sql output
 [ ] comments
 [x] reproducible output (seed)
-[ ] comment with used command line parameters
+[x] comment with used command line parameters
 [ ] namespace for lib
 [x] turn on compiler warnings/errors
 [x] data --> single dimensional vector

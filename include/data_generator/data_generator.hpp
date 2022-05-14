@@ -64,13 +64,18 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
 
 template <class T>
 void output_csv(const Data<T>& data, std::ostream& ostream) {
-    for (unsigned int row = 0; row < data.row_count; ++row) {
+    for (unsigned int row = 0; row < data.row_count - 1; ++row) {
         ostream << data.get_value(row, 0);
         for (unsigned int col = 1; col < data.col_count; ++col) {
             ostream << "," << data.get_value(row, col);
         }
         ostream << "\n";
     }
+    ostream << data.get_value(data.row_count - 1, 0);
+    for (unsigned int col = 1; col < data.col_count; ++col) {
+        ostream << "," << data.get_value(data.row_count - 1, col);
+    }
+    ostream << std::endl;
 }
 
 template <class T>
@@ -89,7 +94,7 @@ void output_sql(const Data<T>& data, std::ostream& ostream,
     for (unsigned int col = 1; col < data.col_count; ++col) {
         ostream << ", " << data.get_value(data.row_count - 1, col);
     }
-    ostream << ");\n";
+    ostream << ");" << std::endl;
 }
 
 template<class T>
@@ -106,7 +111,7 @@ void output_json(const Data<T>& data, std::ostream& ostream) {
     for (unsigned int col = 1; col < data.col_count; ++col) {
         ostream << ", " << data.get_value(data.row_count - 1, col);
     }
-    ostream << "]\n]\n";
+    ostream << "]\n]" << std::endl;
 }
 
 #endif
