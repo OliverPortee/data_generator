@@ -1,5 +1,5 @@
 
-#include "data_generation.hpp"
+#include "model.hpp"
 
 #include "CLI/CLI.hpp"
 
@@ -56,11 +56,9 @@ int main(int argc, char* argv[]) {
 
     parse_cli_options(argc, argv);
 
-    std::bernoulli_distribution n{};
-
-    Settings settings{};
-    
-    auto data = generate_data(settings);
-    (*settings.output)(data, settings, std::cout);
-    return 0;
+    if (true) {
+        Settings<std::uniform_int_distribution<int>> settings{1u, 2u, 4u, output_csv<int>, std::uniform_int_distribution{1, 1000}};
+        auto data = generate_data(settings);
+        output_csv<int>(data, std::cout);
+    }
 }
