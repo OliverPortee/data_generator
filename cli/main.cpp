@@ -75,7 +75,7 @@ void make_cli_interface(CliOptions& options, CLI::App& app) {
         {"csv", CliOptions::OutputFormat::csv},
         {"sql", CliOptions::OutputFormat::sql},
         {"json", CliOptions::OutputFormat::json}};
-    app.add_option("-o,--ouput", options.output, "output format")->transform(CLI::CheckedTransformer{map, CLI::ignore_case});
+    app.add_option("-o,--output", options.output, "output format")->transform(CLI::CheckedTransformer{map, CLI::ignore_case});
     app.add_option("--tablename", options.tablename, "tablename for sql output");
 
     auto uniform_command = app.add_subcommand("uniform", "generates random integers from a uniform distribution")

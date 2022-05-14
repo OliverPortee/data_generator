@@ -11,7 +11,7 @@ Options:
   -n UINT:POSITIVE            number of rows to be generated
   -c UINT:POSITIVE            number of cols to be generated
   --seed UINT                 use seed for deterministic pseudo-random data
-  -o,--ouput ENUM:value in {csv->0,json->2,sql->1} OR {0,2,1}
+  -o,--output ENUM:value in {csv->0,json->2,sql->1} OR {0,2,1}
                               output format
   --tablename TEXT            tablename for sql output
 
@@ -27,4 +27,4 @@ Subcommands:
 
 ## Library
 
-This can be used as a single header library. Just include `data_generator/datagenerator.hpp`!
+This can be used as a single header library. Just include `data_generator/data_generator.hpp`!

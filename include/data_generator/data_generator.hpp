@@ -10,19 +10,28 @@
 
 namespace datagen {
 
+template <typename RandomNumberDistribution>
+class Settings;
+
+template <typename RandomNumberDistribution>
+Data<typename RandomNumberDistribution::result_type> generate_data(Settings<RandomNumberDistribution>& settings);
+
 /// @brief parameters for random number generation
 ///
 /// @tparam RandomNumberDistribution see
 /// https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
-template <class RandomNumberDistribution>
+template <typename RandomNumberDistribution>
 class Settings {
    public:
     using SeedType = std::random_device::result_type;
 
+    friend auto generate_data<RandomNumberDistribution>(
+        Settings<RandomNumberDistribution>& settings);
+
     /// @param sample_count number of rows to be generated
     /// @param col_count number of columns to be generated
-    /// @param seed seed value for random number generation (same seed leads to
-    /// same random values)
+    /// @param seed seed value for random number generation (same seed leads
+    /// to same random values)
     /// @param random random number distribution such as
     /// uniform_int_distribution from stdlib; see
     /// https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
@@ -45,7 +54,7 @@ class Settings {
 
 /// @brief class to hold generated data
 /// @tparam T Type of the data (int, double, bool, ...)
-template <class T>
+template <typename T>
 class Data {
    public:
     const unsigned int row_count;
@@ -73,7 +82,7 @@ class Data {
 
 /// @brief function to do the actual work of generating the data
 /// @tparam RandomNumberDistribution @see Settings
-template <class RandomNumberDistribution>
+template <typename RandomNumberDistribution>
 Data<typename RandomNumberDistribution::result_type> generate_data(
     Settings<RandomNumberDistribution>& settings) {
     std::mt19937 random_algo{settings.seed};
@@ -89,7 +98,7 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
 
 /// @brief output data to std::ostream in csv format
 /// @tparam T Type of the generated data
-template <class T>
+template <typename T>
 void output_csv(const Data<T>& data, std::ostream& ostream) {
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
         ostream << data.get_value(row, 0);
@@ -108,7 +117,7 @@ void output_csv(const Data<T>& data, std::ostream& ostream) {
 /// @brief output data to std::ostream in sql format
 /// @tparam T Type of the generated data
 /// @param tablename name of the table to insert the data into
-template <class T>
+template <typename T>
 void output_sql(const Data<T>& data, std::ostream& ostream,
                 const std::string& tablename) {
     ostream << "INSERT INTO \"" << tablename << "\" VALUES\n";
@@ -129,7 +138,7 @@ void output_sql(const Data<T>& data, std::ostream& ostream,
 
 /// @brief output data to std::ostream in json format (nested array)
 /// @tparam T Type of the generated data
-template <class T>
+template <typename T>
 void output_json(const Data<T>& data, std::ostream& ostream) {
     ostream << "[\n";
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
