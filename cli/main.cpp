@@ -18,6 +18,7 @@ struct CliOptions {
     unsigned int col_count = 5;                  // -c
     unsigned int seed = std::random_device{}();  // --seed
     OutputType output = OutputType::csv;         // -o,--output
+    std::string tablename = "table";             // --tablename
     RandomDistribution distribution = RandomDistribution::uniform;
     int min = std::numeric_limits<int>::min();   // --min (uniform dist)
     int max = std::numeric_limits<int>::max();   // --max (uniform dist)
@@ -39,6 +40,7 @@ void make_cli_interface(CliOptions& options, CLI::App& app) {
         {"sql", CliOptions::OutputType::sql},
         {"json", CliOptions::OutputType::json}};
     app.add_option("-o,--ouput", options.output, "output format")->transform(CLI::CheckedTransformer{map, CLI::ignore_case});
+    app.add_option("--tablename", options.tablename, "tablename for sql output");
 
     auto uniform_command = app.add_subcommand("uniform", "generates random integers from a uniform distribution")
         ->callback([&]() {
@@ -72,6 +74,10 @@ CliOptions parse_cli_options(int argc, char* argv[]) {
         if (app.got_subcommand("uniform") && options.min >= options.max) {
                 throw CLI::ValidationError{"min must be smaller than max"};
         }
+
+        if (app.count("--tablename") && options.output != CliOptions::OutputType::sql) {
+            throw CLI::ValidationError{"--tablename works only with --output sql"};
+        }
         return options;
     } catch (const CLI::ParseError& e) {
         std::exit(app.exit(e));
@@ -79,8 +85,8 @@ CliOptions parse_cli_options(int argc, char* argv[]) {
 }
 
 template<class T>
-void output(CliOptions::OutputType o, Data<T>&& data) {
-    switch(o) {
+void output(Data<T>&& data, const CliOptions& options) {
+    switch(options.output) {
         case CliOptions::OutputType::csv:
             output_csv<T>(data, std::cout);
         break;
@@ -88,8 +94,7 @@ void output(CliOptions::OutputType o, Data<T>&& data) {
             output_json<T>(data, std::cout);
         break;
         case CliOptions::OutputType::sql:
-            std::string table_name{"table"};
-            output_sql<T>(data, std::cout, table_name);
+            output_sql<T>(data, std::cout, options.tablename);
         break;
     }
 }
@@ -120,6 +125,7 @@ std::ostream& operator<<(std::ostream& os, const CliOptions& options) {
             break;
         case CliOptions::OutputType::sql:
             os << "sql";
+            os << " --tablename " << options.tablename;
             break;
     }
 
@@ -150,19 +156,19 @@ int main(int argc, char* argv[]) {
             std::uniform_int_distribution random{options.min, options.max};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output<int>(options.output, generate_data(settings));
+            output<int>(generate_data(settings), options);
         } break;
         case CliOptions::RandomDistribution::normal: {
             std::normal_distribution random{options.mean, options.stddev};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output<double>(options.output, generate_data(settings));
+            output<double>(generate_data(settings), options);
         } break;
         case CliOptions::RandomDistribution::bernoulli: {
             std::bernoulli_distribution random{options.p};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output<bool>(options.output, generate_data(settings));
+            output<bool>(generate_data(settings), options);
         } break;
     }
 
