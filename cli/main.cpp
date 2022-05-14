@@ -3,7 +3,8 @@
 #include <limits>
 #include <random>
 #include <string>
-#include <map>
+#include <string_view>
+#include <unordered_map>
 
 #include "CLI/CLI.hpp"
 #include "data_generator/data_generator.hpp"
@@ -13,6 +14,10 @@ using namespace datagen;
 /// @brief struct to hold all options that can be specified in command line interface
 struct CliOptions {
     enum class OutputFormat { csv, sql, json };
+
+    static const std::unordered_map<std::string, CliOptions::OutputFormat> strToOutputFormat;
+    static const std::unordered_map<OutputFormat, std::string> outputFormatToStr;
+    static const std::unordered_map<OutputFormat, std::string> outputFormatToComment;
 
     enum class RandomDistribution {
         /// every integer in specified range has same likelihood to be generated
@@ -27,7 +32,7 @@ struct CliOptions {
     };
 
     /// number of rows to be generated (cli: -n)
-    unsigned int sample_count = 1000;
+    unsigned int sample_count = 10;
 
     /// number of columns to be generated (cli: -c)
     unsigned int col_count = 5;
@@ -61,6 +66,21 @@ struct CliOptions {
     double p = 0.5;
 };
 
+const std::unordered_map<std::string, CliOptions::OutputFormat>
+    CliOptions::strToOutputFormat{{"csv", CliOptions::OutputFormat::csv},
+                                  {"sql", CliOptions::OutputFormat::sql},
+                                  {"json", CliOptions::OutputFormat::json}};
+
+const std::unordered_map<CliOptions::OutputFormat, std::string>
+    CliOptions::outputFormatToStr{{CliOptions::OutputFormat::csv, "csv"},
+                                  {CliOptions::OutputFormat::sql, "sql"},
+                                  {CliOptions::OutputFormat::json, "json"}};
+
+const std::unordered_map<CliOptions::OutputFormat, std::string>
+    CliOptions::outputFormatToComment{{CliOptions::OutputFormat::csv, "#"},
+                                      {CliOptions::OutputFormat::sql, "--"},
+                                      {CliOptions::OutputFormat::json, "//"}};
+
 /// @brief creates the command line interface using CLI11 library
 /// @param options stores the parsed values
 /// @param[out] app output parameter (CLI::App's copy constructor is deleted)
@@ -71,11 +91,8 @@ void make_cli_interface(CliOptions& options, CLI::App& app) {
     app.add_option("-c", options.col_count, "number of cols to be generated")->check(CLI::PositiveNumber);
     app.add_option("--seed", options.seed, "use seed for deterministic pseudo-random data");
 
-    std::map<std::string, CliOptions::OutputFormat> map{
-        {"csv", CliOptions::OutputFormat::csv},
-        {"sql", CliOptions::OutputFormat::sql},
-        {"json", CliOptions::OutputFormat::json}};
-    app.add_option("-o,--output", options.output, "output format")->transform(CLI::CheckedTransformer{map, CLI::ignore_case});
+    app.add_option("-o,--output", options.output, "output format")
+        ->transform(CLI::CheckedTransformer{CliOptions::strToOutputFormat, CLI::ignore_case});
     app.add_option("--tablename", options.tablename, "tablename for sql output");
 
     auto uniform_command = app.add_subcommand("uniform", "generates random integers from a uniform distribution")
@@ -128,6 +145,8 @@ CliOptions parse_cli_options(int argc, char* argv[]) {
 /// @tparam T Type of the generated data (int, double, bool, ...)
 template<class T>
 void output(Data<T>&& data, const CliOptions& options) {
+    // this can't be put into virtual methods because they would need a template
+    // parameter (T) which c++ doesn't allow
     switch(options.output) {
         case CliOptions::OutputFormat::csv:
             output_csv<T>(data, std::cout);
@@ -144,35 +163,16 @@ void output(Data<T>&& data, const CliOptions& options) {
 /// @brief overloads << operator to print CliOptions instance
 /// @details outputs a string that could be used to re-create the exact same random values
 std::ostream& operator<<(std::ostream& os, const CliOptions& options) {
-    switch (options.output) {
-        case CliOptions::OutputFormat::json:
-            os << "// ";  // actually there are no comments in json, but anyways
-            break;
-        case CliOptions::OutputFormat::csv:
-            os << "# ";  // actually there are no comments in csv, but anyways
-            break;
-        case CliOptions::OutputFormat::sql:
-            os << "-- ";
-            break;
-    }
+    os << CliOptions::outputFormatToComment.at(options.output) << " ";
     os << "gendata";
     os << " -n " << options.sample_count;
     os << " -c " << options.col_count;
     os << " --seed " << options.seed;
     os << " -o ";
-    switch (options.output) {
-        case CliOptions::OutputFormat::json:
-            os << "json";
-            break;
-        case CliOptions::OutputFormat::csv:
-            os << "csv";
-            break;
-        case CliOptions::OutputFormat::sql:
-            os << "sql";
-            os << " --tablename " << options.tablename;
-            break;
+    os << CliOptions::outputFormatToStr.at(options.output);
+    if (options.output == CliOptions::OutputFormat::sql) {
+        os << " --tablename " << options.tablename;
     }
-
     switch (options.distribution) {
         case CliOptions::RandomDistribution::uniform:
             os << " uniform";
