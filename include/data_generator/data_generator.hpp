@@ -7,6 +7,8 @@
 #include <random>
 #include <vector>
 
+namespace datagen {
+
 // see https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
 template <class RandomNumberDistribution>
 struct Settings {
@@ -113,5 +115,7 @@ void output_json(const Data<T>& data, std::ostream& ostream) {
     }
     ostream << "]\n]" << std::endl;
 }
+
+} // namespace datagen
 
 #endif

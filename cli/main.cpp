@@ -8,6 +8,8 @@
 #include "CLI/CLI.hpp"
 #include "data_generator/data_generator.hpp"
 
+using namespace datagen;
+
 struct CliOptions {
     enum class OutputType { csv, sql, json };
     enum class RandomDistribution { uniform, normal, bernoulli };
