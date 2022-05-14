@@ -21,9 +21,13 @@ Subcommands:
   bernoulli                   generates random booleans from a bernoulli distribution
 ```
 
+**examples**
 * uniform distribution: `gendata -n 10 -c 4 --seed 0 --output sql --tablename my_table uniform --min -20 --max 400`
 * normal distribution: `gendata -n 10 -c 4 --seed 0 --output csv normal --mean 5 --stddev 2`
 * bernoulli distribution `gendata -n 10 -c 4 --seed 0 --output json bernoulli -p 0.8`
+* when leaving out the random distribution subcommand, a uniform distribution is used
+* writing to file (prints command to stderr): `gendata > output_file.csv`
+* writing comment to file too: `gendata > output_file.csv 2>&1` (redirect stderr to stdout)
 
 ## Library
 

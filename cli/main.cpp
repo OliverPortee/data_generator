@@ -197,6 +197,9 @@ std::ostream& operator<<(std::ostream& os, const CliOptions& options) {
 int main(int argc, char* argv[]) {
     CliOptions options = parse_cli_options(argc, argv);
 
+    // std::cerr so that we can use shell redirects without problems
+    std::cerr << options << std::endl;
+
     switch (options.distribution) {
         case CliOptions::RandomDistribution::uniform: {
             std::uniform_int_distribution random{options.min, options.max};
@@ -218,7 +221,4 @@ int main(int argc, char* argv[]) {
                          options);
         } break;
     }
-
-    // std::cerr so that we can use shell pipes without problems
-    std::cerr << options << std::endl;
 }
