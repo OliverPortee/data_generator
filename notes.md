@@ -39,7 +39,7 @@ The advice for this week is to create an initial class structure for the generat
 [ ] ~~tests?~~
 [x] change executable name
 [x] rename model.hpp
-[ ] shouldn't crash with n,c == 0,0 (both in lib and in cli)
+[x] shouldn't crash with n,c == 0,0 (both in lib and in cli)
 [ ] use iterators for output
 [ ] output bool in the right way
 [ ] tablename option

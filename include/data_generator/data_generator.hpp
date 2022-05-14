@@ -2,6 +2,7 @@
 #ifndef __MODEL_HPP__
 #define __MODEL_HPP__
 
+#include <cassert>
 #include <functional>
 #include <ostream>
 #include <random>
@@ -24,7 +25,10 @@ struct Settings {
         : sample_count{sample_count},
           col_count{col_count},
           seed{seed},
-          random{random} {}
+          random{random} {
+        assert(sample_count > 0);
+        assert(col_count > 0);
+    }
 };
 
 template <class T>
@@ -99,7 +103,7 @@ void output_sql(const Data<T>& data, std::ostream& ostream,
     ostream << ");" << std::endl;
 }
 
-template<class T>
+template <class T>
 void output_json(const Data<T>& data, std::ostream& ostream) {
     ostream << "[\n";
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
@@ -116,6 +120,6 @@ void output_json(const Data<T>& data, std::ostream& ostream) {
     ostream << "]\n]" << std::endl;
 }
 
-} // namespace datagen
+}  // namespace datagen
 
 #endif

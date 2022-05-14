@@ -30,8 +30,8 @@ void make_cli_interface(CliOptions& options, CLI::App& app) {
 
     app.require_subcommand(0, 1);
 
-    app.add_option("-n", options.sample_count, "number of rows to be generated");
-    app.add_option("-c", options.col_count, "number of cols to be generated");
+    app.add_option("-n", options.sample_count, "number of rows to be generated")->check(CLI::PositiveNumber);
+    app.add_option("-c", options.col_count, "number of cols to be generated")->check(CLI::PositiveNumber);
     app.add_option("--seed", options.seed, "use seed for deterministic pseudo-random data");
 
     std::map<std::string, CliOptions::OutputType> map{
