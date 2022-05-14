@@ -76,6 +76,22 @@ CliOptions parse_cli_options(int argc, char* argv[]) {
     }
 }
 
+template<class T>
+void output(CliOptions::OutputType o, Data<T>&& data) {
+    switch(o) {
+        case CliOptions::OutputType::csv:
+            output_csv<T>(data, std::cout);
+        break;
+        case CliOptions::OutputType::json:
+            output_json<T>(data, std::cout);
+        break;
+        case CliOptions::OutputType::sql:
+            std::string table_name{"table"};
+            output_sql<T>(data, std::cout, table_name);
+        break;
+    }
+}
+
 int main(int argc, char* argv[]) {
     CliOptions options = parse_cli_options(argc, argv);
 
@@ -84,19 +100,19 @@ int main(int argc, char* argv[]) {
             std::uniform_int_distribution random{options.min, options.max};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output_csv<int>(generate_data(settings), std::cout);
+            output<int>(options.output, generate_data(settings));
         } break;
         case CliOptions::RandomDistribution::normal: {
             std::normal_distribution random{options.mean, options.stddev};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output_csv<double>(generate_data(settings), std::cout);
+            output<double>(options.output, generate_data(settings));
         } break;
         case CliOptions::RandomDistribution::bernoulli: {
             std::bernoulli_distribution random{options.p};
             Settings settings{options.sample_count, options.col_count,
                               options.seed, random};
-            output_csv<bool>(generate_data(settings), std::cout);
+            output<bool>(options.output, generate_data(settings));
         } break;
     }
 }
