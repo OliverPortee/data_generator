@@ -45,3 +45,8 @@ The advice for this week is to create an initial class structure for the generat
 * [x] tablename option
 * [x] readme
 * [ ] ~~use inheritance instead of switches in main.cpp?~~
+* [ ] constexpr
+* [ ] library example
+* [ ] debug print data
+* [ ] last, front
+* [ ] cit

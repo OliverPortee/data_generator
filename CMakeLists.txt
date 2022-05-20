@@ -19,3 +19,6 @@ set_target_properties(libdatagen PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(gendata ${CLI_SOURCES})
 target_link_libraries(gendata libdatagen CLI11::CLI11)
+
+add_executable(example example.cpp)
+target_link_libraries(example libdatagen)
