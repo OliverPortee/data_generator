@@ -204,20 +204,20 @@ int main(int argc, char* argv[]) {
         case CliOptions::RandomDistribution::uniform: {
             std::uniform_int_distribution random{options.min, options.max};
             output<int>(generate_data(options.sample_count, options.col_count,
-                                      options.seed, random),
+                                      std::move(random), options.seed),
                         options);
         } break;
         case CliOptions::RandomDistribution::normal: {
             std::normal_distribution random{options.mean, options.stddev};
             output<double>(
                 generate_data(options.sample_count, options.col_count,
-                              options.seed, random),
+                              std::move(random), options.seed),
                 options);
         } break;
         case CliOptions::RandomDistribution::bernoulli: {
             std::bernoulli_distribution random{options.p};
             output<bool>(generate_data(options.sample_count, options.col_count,
-                                       options.seed, random),
+                                       std::move(random), options.seed),
                          options);
         } break;
     }

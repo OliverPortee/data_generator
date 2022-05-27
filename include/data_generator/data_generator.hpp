@@ -14,120 +14,12 @@
 namespace datagen {
 
 /// @brief class to hold generated data
-/// @tparam T Type of the data (int, double, bool, ...)
+/// @tparam T type of the data (int, double, bool, ...)
 template <typename T>
 class Data {
    private:
-    struct RowView {
-       private:
-        struct ElementIterator;
-
-       public:
-        constexpr RowView(T* ptr, std::size_t size) : ptr{ptr}, _size{size} {
-            assert(ptr != nullptr);
-        }
-
-        constexpr T* data() const { return ptr; }
-        constexpr std::size_t size() const { return _size; }
-        constexpr T& operator[](std::size_t pos) { return *(ptr + pos); }
-        constexpr ElementIterator begin() { return ElementIterator{ptr}; }
-        constexpr ElementIterator end() { return ElementIterator{ptr + _size}; }
-
-       private:
-        T* ptr;
-        std::size_t _size;
-
-        struct ElementIterator {
-            using iterator_category = std::bidirectional_iterator_tag;
-            using difference_type = std::ptrdiff_t;  // TODO
-            using value_type = T;
-            using pointer = value_type*;
-            using reference = value_type&;
-
-            ElementIterator(T* ptr) : ptr{ptr} { assert(ptr != nullptr); }
-
-            reference operator*() const { return *ptr; }
-            pointer operator->() const { return ptr; }
-
-            ElementIterator& operator++() {
-                ++ptr;
-                return *this;
-            }
-            ElementIterator operator++(int) {
-                ElementIterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-
-            ElementIterator& operator--() {
-                --ptr;
-                return *this;
-            }
-            ElementIterator operator--(int) {
-                ElementIterator tmp = *this;
-                --(*this);
-                return tmp;
-            }
-
-            bool operator==(const ElementIterator& other) const {
-                return ptr == other.ptr;
-            }
-            bool operator!=(const ElementIterator& other) const {
-                return ptr != other.ptr;
-            }
-
-           private:
-            T* ptr;
-        };
-    };
-
-    struct RowIterator {
-        using iterator_category = std::bidirectional_iterator_tag;
-        using difference_type = std::ptrdiff_t;  // TODO
-        using value_type = RowView;
-        using pointer = value_type*;
-        using reference = value_type&;
-
-        RowIterator(T* ptr, std::size_t size) : view{ptr, size} {
-            assert(ptr != nullptr);
-        }
-
-        reference operator*() { return view; }
-        pointer operator->() const { return &view; }
-
-        RowIterator& operator++() {
-            view = RowView{view.data() + view.size(), view.size()};
-            return *this;
-        }
-        RowIterator operator++(int) {
-            RowIterator tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        RowIterator& operator--() {
-            view = RowView{view.data() - view.size(), view.size()};
-            return *this;
-        }
-
-        RowIterator operator--(int) {
-            RowIterator tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
-        bool operator==(const RowIterator& other) const {
-            return view.size() == other.view.size() &&
-                   view.data() == other.view.data();
-        }
-
-        bool operator!=(const RowIterator& other) const {
-            return !(*this == other);
-        }
-
-       private:
-        RowView view;
-    };
+    struct ConstRowIterator;
+    struct RowView;
 
    public:
     const unsigned int row_count;
@@ -137,20 +29,149 @@ class Data {
         : row_count{row_count}, col_count{col_count} {
         assert(row_count > 0);
         assert(col_count > 0);
-        data = std::make_unique<T[]>(row_count * col_count);
-        assert(data != nullptr);
+        data = std::vector<T>(row_count * col_count);
     }
 
-    RowIterator begin() { return RowIterator{data.get(), col_count}; }
+    ConstRowIterator begin() const {
+        return ConstRowIterator{data.data(), col_count};
+    }
 
-    RowIterator end() {
-        return RowIterator{data.get() + row_count * col_count, col_count};
+    ConstRowIterator end() const {
+        return ConstRowIterator{data.data() + row_count * col_count, col_count};
+    }
+
+    std::size_t size() const { return row_count * col_count; }
+
+    RowView operator[](std::size_t pos) const {
+        return RowView{data.data() + col_count * pos, col_count};
+    }
+
+    void setValue(unsigned int row, unsigned int col, T&& value) {
+        data[row * col_count + col] = value;
     }
 
    private:
-    std::unique_ptr<T[]> data;
+    std::vector<T> data;
 
+    struct RowView {
+       private:
+        struct ConstElementIterator;
 
+       public:
+        RowView(const T* ptr, std::size_t size)
+            : ptr{ptr}, _size{size} {
+            assert(ptr != nullptr);
+        }
+        const T* data() const { return ptr; }
+        std::size_t size() const { return _size; }
+        const T& operator[](std::size_t pos) const {
+            return *(ptr + pos);
+        }
+        ConstElementIterator begin() const {
+            return ConstElementIterator{ptr};
+        }
+        ConstElementIterator end() const {
+            return ConstElementIterator{ptr + _size};
+        }
+
+       private:
+        const T* ptr;
+        std::size_t _size;
+
+        struct ConstElementIterator {
+            using iterator_category = std::bidirectional_iterator_tag;
+            using difference_type = std::ptrdiff_t;
+            using value_type = T;
+            using pointer = const value_type*;
+            using reference = const value_type&;
+
+            ConstElementIterator(const T* ptr) : ptr{ptr} {
+                assert(ptr != nullptr);
+            }
+
+            reference operator*() const { return *ptr; }
+            pointer operator->() const { return ptr; }
+
+            ConstElementIterator& operator++() {
+                ++ptr;
+                return *this;
+            }
+            ConstElementIterator operator++(int) {
+                ConstElementIterator tmp = *this;
+                ++(*this);
+                return tmp;
+            }
+
+            ConstElementIterator& operator--() {
+                --ptr;
+                return *this;
+            }
+            ConstElementIterator operator--(int) {
+                ConstElementIterator tmp = *this;
+                --(*this);
+                return tmp;
+            }
+
+            bool operator==(const ConstElementIterator& other) const {
+                return ptr == other.ptr;
+            }
+            bool operator!=(const ConstElementIterator& other) const {
+                return ptr != other.ptr;
+            }
+
+           private:
+            const T* ptr;
+        };
+    };
+
+    struct ConstRowIterator {
+        using iterator_category = std::bidirectional_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+        using value_type = RowView;
+        using pointer = const value_type*;
+        using reference = const value_type&;
+
+        ConstRowIterator(const T* ptr, std::size_t size)
+            : view{ptr, size} {
+            assert(ptr != nullptr);
+        }
+
+        reference operator*() const { return view; }
+        pointer operator->() const { return &view; }
+
+        ConstRowIterator& operator++() {
+            view = RowView{view.data() + view.size(), view.size()};
+            return *this;
+        }
+        ConstRowIterator operator++(int) {
+            ConstRowIterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        ConstRowIterator& operator--() {
+            view = RowView{view.data() - view.size(), view.size()};
+            return *this;
+        }
+
+        ConstRowIterator operator--(int) {
+            ConstRowIterator tmp = *this;
+            --(*this);
+            return tmp;
+        }
+
+        bool operator==(const ConstRowIterator& other) const {
+            return view.size() == other.view.size() &&
+                   view.data() == other.view.data();
+        }
+
+        bool operator!=(const ConstRowIterator& other) const {
+            return !(*this == other);
+        }
+
+       private:
+        RowView view;
+    };
 };
 
 /// @brief function to do the actual work of generating the data
@@ -158,15 +179,15 @@ class Data {
 /// https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
 /// @param sample_count number of rows to be generated
 /// @param col_count number of columns to be generated
-/// @param seed seed value for random number generation (same seed leads
-/// to same random values)
 /// @param random random number distribution such as
 /// uniform_int_distribution from stdlib
+/// @param seed seed value for random number generation (same seed leads
+/// to same random values)
 template <typename RandomNumberDistribution>
 Data<typename RandomNumberDistribution::result_type> generate_data(
     unsigned int sample_count, unsigned int col_count,
-    typename std::random_device::result_type seed,
-    RandomNumberDistribution random) {
+    RandomNumberDistribution&& random,
+    typename std::random_device::result_type seed = std::random_device{}()) {
     assert(sample_count > 0);
     assert(col_count > 0);
     std::mt19937 random_algo{seed};
@@ -174,7 +195,7 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
     Data<T> data{sample_count, col_count};
     for (unsigned int row = 0; row < sample_count; ++row) {
         for (unsigned int col = 0; col < col_count; ++col) {
-            data[row][col] = random(random_algo);
+            data.setValue(row, col, random(random_algo));
         }
     }
     return data;
