@@ -30,7 +30,7 @@ The advice for this week is to create an initial class structure for the generat
 * [x] measure difference between shell pipe and direct file writing ---> performance difference of 2-4%
 * [x] normal distribution
 * [x] sql output
-* [ ] comments
+* [x] comments
 * [x] reproducible output (seed)
 * [x] comment with used command line parameters
 * [x] namespace for lib

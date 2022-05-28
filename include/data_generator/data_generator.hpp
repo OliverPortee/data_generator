@@ -44,6 +44,14 @@ class Data {
         return RowView{data.begin() + col_count * pos, col_count};
     }
 
+    RowView front() const {
+        return RowView{data.begin(), col_count};
+    }
+
+    RowView back() const {
+        return (*this)[row_count - 1];
+    }
+
     void setValue(unsigned int row, unsigned int col, T&& value) {
         data[row * col_count + col] = value;
     }
