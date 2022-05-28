@@ -36,21 +36,19 @@ The advice for this week is to create an initial class structure for the generat
 * [x] namespace for lib
 * [x] turn on compiler warnings/errors
 * [x] data --> single dimensional vector
-* [ ] ~~tests?~~
+* [x] tests?
 * [x] change executable name
 * [x] rename model.hpp
 * [x] shouldn't crash with n,c == 0,0 (both in lib and in cli)
-* [ ] use iterators for output
-* [ ] ~~output bool in the right way~~
+* [ ] ~~use iterators for output~~ (doesn't work very well)
 * [x] tablename option
 * [x] readme
-* [ ] ~~use inheritance instead of switches in main.cpp?~~
 * [ ] ~~constexpr~~ (doesn't work because std::vector is not able to)
 * [ ] library example – demonstrate stdlib algorithms with iterators
 * [ ] debug print data
-* [ ] last, front
+* [x] last, front
 * [x] cit
-* [ ] DataFormat could be template parameter for a more general output method?????
+* [ ] ~~DataFormat could be template parameter for a more general output method?~~ (this would require the library to have access to cli DataFormat enum)
 * [x] generate data – default argument for seed
-* [ ] find out test coverage
+* [ ] ~~find out test coverage~~
 * [x] consistent size_t/unsigned int usage

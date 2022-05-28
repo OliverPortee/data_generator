@@ -52,7 +52,7 @@ class Data {
         return (*this)[row_count - 1];
     }
 
-    void setValue(unsigned int row, unsigned int col, T&& value) {
+    void set_value(unsigned int row, unsigned int col, T&& value) {
         data[row * col_count + col] = value;
     }
 
@@ -144,7 +144,7 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
     Data<T> data{sample_count, col_count};
     for (unsigned int row = 0; row < sample_count; ++row) {
         for (unsigned int col = 0; col < col_count; ++col) {
-            data.setValue(row, col, random(random_algo));
+            data.set_value(row, col, random(random_algo));
         }
     }
     return data;
