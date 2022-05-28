@@ -22,12 +22,15 @@ struct MyOwnRandomNumberDistribution {
 int main() {
     // use a random distribution from stdlib (or implement your own)
     // see https://en.cppreference.com/w/cpp/named_req/RandomNumberDistribution
-    std::uniform_int_distribution h{-6, 99};
+    std::uniform_int_distribution h{-6, 99}; // min, max
+    // generate random uniform int data with 10 rows and 5 columns
     datagen::Data<int> data = datagen::generate_data(10, 5, std::move(h));
 
     // easily write the data into a file
     std::ofstream ofs{"testfile.csv"};
+    // output in csv format (output_sql, output_json exist too)
     datagen::output_csv(data, ofs);
+    // close the file stream
     ofs.close();
 
     // you can also use your own random number generator
@@ -49,7 +52,7 @@ int main() {
         }
     }
 
-    // ...or to access elements with []
+    // ...or to access elements with [][]
     data[2][1];
 
     // stdlib <algorithm> functions work as well
