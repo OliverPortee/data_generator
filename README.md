@@ -31,4 +31,4 @@ Subcommands:
 
 ## Library
 
-This can be used as a single header library. Just include `data_generator/data_generator.hpp`!
+This can be used as a single header library. Just include `data_generator/data_generator.hpp`! Have a look at the [example](example.cpp).

@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <random>
-#include <vector>
 
 #include "data_generator/data_generator.hpp"
 
