@@ -44,7 +44,7 @@ The advice for this week is to create an initial class structure for the generat
 * [x] tablename option
 * [x] readme
 * [ ] ~~constexpr~~ (doesn't work because std::vector is not able to)
-* [ ] library example – demonstrate stdlib algorithms with iterators
+* [x] library example – demonstrate stdlib algorithms with iterators
 * [ ] debug print data
 * [x] last, front
 * [x] cit
@@ -52,3 +52,4 @@ The advice for this week is to create an initial class structure for the generat
 * [x] generate data – default argument for seed
 * [ ] ~~find out test coverage~~
 * [x] consistent size_t/unsigned int usage
+* [ ] special output function

@@ -6,6 +6,7 @@
 #include <ostream>
 #include <random>
 #include <vector>
+#include <functional>
 
 namespace datagen {
 
@@ -151,7 +152,7 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
 }
 
 /// @brief output data to std::ostream in csv format
-/// @tparam T Type of the generated data
+/// @tparam T type of the generated data
 template <typename T>
 void output_csv(const Data<T>& data, std::ostream& ostream) {
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
@@ -205,6 +206,24 @@ void output_json(const Data<T>& data, std::ostream& ostream) {
     ostream << "  [" << data[data.row_count - 1][0];
     for (unsigned int col = 1; col < data.col_count; ++col) {
         ostream << ", " << data[data.row_count - 1][col];
+    }
+    ostream << "]\n]" << std::endl;
+}
+
+/// template specialization for bool
+template<>
+void output_json<bool>(const Data<bool>& data, std::ostream& ostream) {
+    ostream << "[\n";
+    for (unsigned int row = 0; row < data.row_count - 1; ++row) {
+        ostream << "  [" << (data[row][0] ? "true" : "false");
+        for (unsigned int col = 1; col < data.col_count; ++col) {
+            ostream << ", " << (data[row][col] ? "true" : "false");
+        }
+        ostream << "],\n";
+    }
+    ostream << "  [" << (data[data.row_count - 1][0] ? "true" : "false");
+    for (unsigned int col = 1; col < data.col_count; ++col) {
+        ostream << ", " << (data[data.row_count - 1][col] ? "true" : "false");
     }
     ostream << "]\n]" << std::endl;
 }
