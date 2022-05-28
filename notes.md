@@ -46,11 +46,11 @@ The advice for this week is to create an initial class structure for the generat
 * [x] readme
 * [ ] ~~use inheritance instead of switches in main.cpp?~~
 * [ ] ~~constexpr~~ (doesn't work because std::vector is not able to)
-* [ ] library example
+* [ ] library example – demonstrate stdlib algorithms with iterators
 * [ ] debug print data
 * [ ] last, front
 * [x] cit
 * [ ] DataFormat could be template parameter for a more general output method?????
 * [x] generate data – default argument for seed
 * [ ] find out test coverage
-* [ ] consistent size_t/unsigned int usage
+* [x] consistent size_t/unsigned int usage

@@ -33,17 +33,17 @@ class Data {
     }
 
     ConstRowIterator begin() const {
-        return ConstRowIterator{data.data(), col_count};
+        return ConstRowIterator{data.begin(), col_count};
     }
 
     ConstRowIterator end() const {
-        return ConstRowIterator{data.data() + row_count * col_count, col_count};
+        return ConstRowIterator{data.end(), col_count};
     }
 
-    std::size_t size() const { return row_count * col_count; }
+    unsigned int size() const { return row_count * col_count; }
 
-    RowView operator[](std::size_t pos) const {
-        return RowView{data.data() + col_count * pos, col_count};
+    RowView operator[](unsigned int pos) const {
+        return RowView{data.begin() + col_count * pos, col_count};
     }
 
     void setValue(unsigned int row, unsigned int col, T&& value) {
@@ -52,95 +52,44 @@ class Data {
 
    private:
     std::vector<T> data;
+    using Iterator = std::vector<T>::const_iterator;
 
     struct RowView {
-       private:
-        struct ConstElementIterator;
-
+        friend ConstRowIterator;
        public:
-        RowView(const T* ptr, std::size_t size)
-            : ptr{ptr}, _size{size} {
-            assert(ptr != nullptr);
+        RowView(Iterator it, unsigned int size)
+            : it{it}, _size{size} {}
+        unsigned int size() const { return _size; }
+        T operator[](unsigned int pos) const {
+           return *(it + pos);
         }
-        const T* data() const { return ptr; }
-        std::size_t size() const { return _size; }
-        const T& operator[](std::size_t pos) const {
-            return *(ptr + pos);
+        Iterator begin() const {
+            return it; // TODO: can you modify this from the outside?
         }
-        ConstElementIterator begin() const {
-            return ConstElementIterator{ptr};
-        }
-        ConstElementIterator end() const {
-            return ConstElementIterator{ptr + _size};
+        Iterator end() const {
+            return it + _size;
         }
 
        private:
-        const T* ptr;
-        std::size_t _size;
-
-        struct ConstElementIterator {
-            using iterator_category = std::bidirectional_iterator_tag;
-            using difference_type = std::ptrdiff_t;
-            using value_type = T;
-            using pointer = const value_type*;
-            using reference = const value_type&;
-
-            ConstElementIterator(const T* ptr) : ptr{ptr} {
-                assert(ptr != nullptr);
-            }
-
-            reference operator*() const { return *ptr; }
-            pointer operator->() const { return ptr; }
-
-            ConstElementIterator& operator++() {
-                ++ptr;
-                return *this;
-            }
-            ConstElementIterator operator++(int) {
-                ConstElementIterator tmp = *this;
-                ++(*this);
-                return tmp;
-            }
-
-            ConstElementIterator& operator--() {
-                --ptr;
-                return *this;
-            }
-            ConstElementIterator operator--(int) {
-                ConstElementIterator tmp = *this;
-                --(*this);
-                return tmp;
-            }
-
-            bool operator==(const ConstElementIterator& other) const {
-                return ptr == other.ptr;
-            }
-            bool operator!=(const ConstElementIterator& other) const {
-                return ptr != other.ptr;
-            }
-
-           private:
-            const T* ptr;
-        };
+        Iterator it;
+        unsigned int _size;
     };
 
     struct ConstRowIterator {
         using iterator_category = std::bidirectional_iterator_tag;
-        using difference_type = std::ptrdiff_t;
+        using difference_type = unsigned int; // TODO
         using value_type = RowView;
         using pointer = const value_type*;
         using reference = const value_type&;
 
-        ConstRowIterator(const T* ptr, std::size_t size)
-            : view{ptr, size} {
-            assert(ptr != nullptr);
-        }
+        ConstRowIterator(Iterator it, unsigned int size)
+            : view{it, size} {}
 
         reference operator*() const { return view; }
         pointer operator->() const { return &view; }
 
         ConstRowIterator& operator++() {
-            view = RowView{view.data() + view.size(), view.size()};
+            view = RowView{view.it + view.size(), view.size()};
             return *this;
         }
         ConstRowIterator operator++(int) {
@@ -150,7 +99,7 @@ class Data {
         }
 
         ConstRowIterator& operator--() {
-            view = RowView{view.data() - view.size(), view.size()};
+            view = RowView{view.it - view.size(), view.size()};
             return *this;
         }
 
@@ -162,7 +111,7 @@ class Data {
 
         bool operator==(const ConstRowIterator& other) const {
             return view.size() == other.view.size() &&
-                   view.data() == other.view.data();
+                   view.it == other.view.it;
         }
 
         bool operator!=(const ConstRowIterator& other) const {
