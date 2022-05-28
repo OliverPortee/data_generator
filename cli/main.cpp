@@ -1,13 +1,10 @@
 
-#include <iostream>
+#include "data_generator/data_generator.hpp"
+#include "CLI/CLI.hpp"
+
 #include <limits>
 #include <random>
-#include <string>
-#include <string_view>
 #include <unordered_map>
-
-#include "CLI/CLI.hpp"
-#include "data_generator/data_generator.hpp"
 
 using namespace datagen;
 

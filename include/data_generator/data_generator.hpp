@@ -3,10 +3,6 @@
 #define __MODEL_HPP__
 
 #include <cassert>
-#include <cstddef>
-#include <functional>
-#include <iterator>
-#include <memory>
 #include <ostream>
 #include <random>
 #include <vector>
@@ -22,6 +18,8 @@ class Data {
     struct RowView;
 
    public:
+    using Iterator = std::vector<T>::const_iterator;
+
     const unsigned int row_count;
     const unsigned int col_count;
 
@@ -52,38 +50,33 @@ class Data {
 
    private:
     std::vector<T> data;
-    using Iterator = std::vector<T>::const_iterator;
 
+    /// @brief provides an abstraction of a row in the data table
     struct RowView {
         friend ConstRowIterator;
-       public:
-        RowView(Iterator it, unsigned int size)
-            : it{it}, _size{size} {}
+
+        RowView(Iterator it, unsigned int size) : it{it}, _size{size} {}
         unsigned int size() const { return _size; }
-        T operator[](unsigned int pos) const {
-           return *(it + pos);
-        }
-        Iterator begin() const {
-            return it; // TODO: can you modify this from the outside?
-        }
-        Iterator end() const {
-            return it + _size;
-        }
+        T operator[](unsigned int pos) const { return *(it + pos); }
+        Iterator begin() const { return it; }
+        Iterator end() const { return it + _size; }
+        T front() const { return *it; }
+        T back() const { return *(it + _size - 1); }
 
        private:
         Iterator it;
         unsigned int _size;
     };
 
+    /// @brief iterator for iterating rows of the data table
     struct ConstRowIterator {
         using iterator_category = std::bidirectional_iterator_tag;
-        using difference_type = unsigned int; // TODO
+        using difference_type = long int;
         using value_type = RowView;
         using pointer = const value_type*;
         using reference = const value_type&;
 
-        ConstRowIterator(Iterator it, unsigned int size)
-            : view{it, size} {}
+        ConstRowIterator(Iterator it, unsigned int size) : view{it, size} {}
 
         reference operator*() const { return view; }
         pointer operator->() const { return &view; }
@@ -110,8 +103,7 @@ class Data {
         }
 
         bool operator==(const ConstRowIterator& other) const {
-            return view.size() == other.view.size() &&
-                   view.it == other.view.it;
+            return view.size() == other.view.size() && view.it == other.view.it;
         }
 
         bool operator!=(const ConstRowIterator& other) const {
