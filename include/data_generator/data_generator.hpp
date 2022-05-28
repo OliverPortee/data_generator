@@ -3,10 +3,10 @@
 #define __MODEL_HPP__
 
 #include <cassert>
+#include <functional>
 #include <ostream>
 #include <random>
 #include <vector>
-#include <functional>
 
 namespace datagen {
 
@@ -45,13 +45,9 @@ class Data {
         return RowView{data.begin() + col_count * pos, col_count};
     }
 
-    RowView front() const {
-        return RowView{data.begin(), col_count};
-    }
+    RowView front() const { return RowView{data.begin(), col_count}; }
 
-    RowView back() const {
-        return (*this)[row_count - 1];
-    }
+    RowView back() const { return (*this)[row_count - 1]; }
 
     void set_value(unsigned int row, unsigned int col, T&& value) {
         data[row * col_count + col] = value;
@@ -151,20 +147,52 @@ Data<typename RandomNumberDistribution::result_type> generate_data(
     return data;
 }
 
+/// @brief function template for outputting a single value (used for output
+/// functions)
+template <typename T>
+using OutputFunction = std::function<void(const T&, std::ostream&)>;
+
+namespace detail {
+
+/// @brief simply output the given value
+/// @details used as default argument for output functions
+template <typename T>
+void output_id(const T& t, std::ostream& ostream) {
+    ostream << t;
+}
+
+/// @brief output function for a single value for json
+template <typename T>
+void output_id_json(const T& t, std::ostream& ostream) {
+    ostream << t;
+}
+
+/// @brief template specialization for bool
+/// @details json has boolean type with values "true" and "false"
+template <>
+void output_id_json<bool>(const bool& t, std::ostream& ostream) {
+    ostream << (t ? "true" : "false");
+}
+
+}  // namespace detail
+
 /// @brief output data to std::ostream in csv format
 /// @tparam T type of the generated data
 template <typename T>
-void output_csv(const Data<T>& data, std::ostream& ostream) {
+void output_csv(const Data<T>& data, std::ostream& ostream,
+                const OutputFunction<T>& o = detail::output_id<T>) {
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
-        ostream << data[row][0];
+        o(data[row][0], ostream);
         for (unsigned int col = 1; col < data.col_count; ++col) {
-            ostream << "," << data[row][col];
+            ostream << ",";
+            o(data[row][col], ostream);
         }
         ostream << "\n";
     }
-    ostream << data[data.row_count - 1][0];
+    o(data[data.row_count - 1][0], ostream);
     for (unsigned int col = 1; col < data.col_count; ++col) {
-        ostream << "," << data[data.row_count - 1][col];
+        ostream << ",";
+        o(data[data.row_count - 1][col], ostream);
     }
     ostream << std::endl;
 }
@@ -174,19 +202,24 @@ void output_csv(const Data<T>& data, std::ostream& ostream) {
 /// @param tablename name of the table to insert the data into
 template <typename T>
 void output_sql(const Data<T>& data, std::ostream& ostream,
-                const std::string& tablename) {
+                const std::string& tablename,
+                const OutputFunction<T>& o = detail::output_id<T>) {
     ostream << "INSERT INTO \"" << tablename << "\" VALUES\n";
 
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
-        ostream << "  (" << data[row][0];
+        ostream << "  (";
+        o(data[row][0], ostream);
         for (unsigned int col = 1; col < data.col_count; ++col) {
-            ostream << ", " << data[row][col];
+            ostream << ", ";
+            o(data[row][col], ostream);
         }
         ostream << "),\n";
     }
-    ostream << "  (" << data[data.row_count - 1][0];
+    ostream << "  (";
+    o(data[data.row_count - 1][0], ostream);
     for (unsigned int col = 1; col < data.col_count; ++col) {
-        ostream << ", " << data[data.row_count - 1][col];
+        ostream << ", ";
+        o(data[data.row_count - 1][col], ostream);
     }
     ostream << ");" << std::endl;
 }
@@ -194,36 +227,23 @@ void output_sql(const Data<T>& data, std::ostream& ostream,
 /// @brief output data to std::ostream in json format (nested array)
 /// @tparam T Type of the generated data
 template <typename T>
-void output_json(const Data<T>& data, std::ostream& ostream) {
+void output_json(const Data<T>& data, std::ostream& ostream,
+                 const OutputFunction<T>& o = detail::output_id_json<T>) {
     ostream << "[\n";
     for (unsigned int row = 0; row < data.row_count - 1; ++row) {
-        ostream << "  [" << data[row][0];
+        ostream << "  [";
+        o(data[row][0], ostream);
         for (unsigned int col = 1; col < data.col_count; ++col) {
-            ostream << ", " << data[row][col];
+            ostream << ", ";
+            o(data[row][col], ostream);
         }
         ostream << "],\n";
     }
-    ostream << "  [" << data[data.row_count - 1][0];
+    ostream << "  [";
+    o(data[data.row_count - 1][0], ostream);
     for (unsigned int col = 1; col < data.col_count; ++col) {
-        ostream << ", " << data[data.row_count - 1][col];
-    }
-    ostream << "]\n]" << std::endl;
-}
-
-/// template specialization for bool
-template<>
-void output_json<bool>(const Data<bool>& data, std::ostream& ostream) {
-    ostream << "[\n";
-    for (unsigned int row = 0; row < data.row_count - 1; ++row) {
-        ostream << "  [" << (data[row][0] ? "true" : "false");
-        for (unsigned int col = 1; col < data.col_count; ++col) {
-            ostream << ", " << (data[row][col] ? "true" : "false");
-        }
-        ostream << "],\n";
-    }
-    ostream << "  [" << (data[data.row_count - 1][0] ? "true" : "false");
-    for (unsigned int col = 1; col < data.col_count; ++col) {
-        ostream << ", " << (data[data.row_count - 1][col] ? "true" : "false");
+        ostream << ", ";
+        o(data[data.row_count - 1][col], ostream);
     }
     ostream << "]\n]" << std::endl;
 }

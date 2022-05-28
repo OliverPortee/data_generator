@@ -34,7 +34,13 @@ int main() {
     // you can also use your own random number generator
     auto complex_data =
         datagen::generate_data(5, 3, MyOwnRandomNumberDistribution{});
-    datagen::output_json(complex_data, std::cout);
+    // and you can provide your own way of printing a single piece of data (for
+    // example a complex number)
+    datagen::output_json<std::complex<long unsigned int>>(
+        complex_data, std::cout,
+        [](const std::complex<long unsigned int>& c, std::ostream& os) {
+            os << "\"(" << c.real() << "; " << c.imag() << ")\"";
+        });
 
     // it's possible to iterate through rows and columns...
     for (const auto& row : data) {
@@ -47,14 +53,12 @@ int main() {
     // ...or to access elements with []
     data[2][1];
 
-    // stdlib function work as well
+    // stdlib <algorithm> functions work as well
     std::for_each_n(data.front().begin(), data.size(), [](auto) {
         // process your random number
     });
 
-    auto even_count = std::count_if(data.front().begin(), data.back().end(), [](const int& i) {
-        return i % 2 == 0;
-    });
+    auto even_count = std::count_if(data.front().begin(), data.back().end(),
+                                    [](const int& i) { return i % 2 == 0; });
     std::cout << even_count << std::endl;
-
 }

@@ -52,4 +52,4 @@ The advice for this week is to create an initial class structure for the generat
 * [x] generate data – default argument for seed
 * [ ] ~~find out test coverage~~
 * [x] consistent size_t/unsigned int usage
-* [ ] special output function
+* [x] special output function
