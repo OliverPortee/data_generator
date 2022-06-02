@@ -162,6 +162,9 @@ void output_id(const T& t, std::ostream& ostream) {
 }
 
 /// @brief output function for a single value for json
+/// @details the reason for this special function is that
+/// specifically for json we need a template specialization
+/// that prints "true" and "false" instead of 1 and 0;
 template <typename T>
 void output_id_json(const T& t, std::ostream& ostream) {
     ostream << t;
