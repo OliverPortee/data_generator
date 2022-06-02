@@ -197,7 +197,6 @@ void output_csv(const Data<T>& data, std::ostream& ostream,
         ostream << ",";
         o(data[data.row_count - 1][col], ostream);
     }
-    ostream << std::endl;
 }
 
 /// @brief output data to std::ostream in sql format
@@ -224,7 +223,7 @@ void output_sql(const Data<T>& data, std::ostream& ostream,
         ostream << ", ";
         o(data[data.row_count - 1][col], ostream);
     }
-    ostream << ");" << std::endl;
+    ostream << ");";
 }
 
 /// @brief output data to std::ostream in json format (nested array)
@@ -248,7 +247,7 @@ void output_json(const Data<T>& data, std::ostream& ostream,
         ostream << ", ";
         o(data[data.row_count - 1][col], ostream);
     }
-    ostream << "]\n]" << std::endl;
+    ostream << "]\n]";
 }
 
 }  // namespace datagen
