@@ -32,3 +32,18 @@ Subcommands:
 ## Library
 
 This can be used as a single header library. Just include `data_generator/data_generator.hpp`! Have a look at the [example](example.cpp).
+
+## Build
+
+* `mkdir build && cd build && cmake .. && make $TARGET`
+* available targets:
+	* `gendata` for command line interface
+	* `example` for [example.cpp](example.cpp)
+	* `tests` for the tests
+
+## Dependencies
+
+The dependencies will be fetched automatically by CMake.
+
+* [Catch2](https://github.com/catchorg/Catch2), v3.0.1, for the tests
+* [CLI11](https://github.com/CLIUtils/CLI11), v2.2.0, for the command line interface
