@@ -43,6 +43,7 @@ int main() {
         [](const std::complex<long unsigned int>& c, std::ostream& os) {
             os << "\"(" << c.real() << "; " << c.imag() << ")\"";
         });
+    std::cout << std::endl;
 
     // it's possible to iterate through rows and columns...
     for (const auto& row : data) {
